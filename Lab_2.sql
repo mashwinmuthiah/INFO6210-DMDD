@@ -29,7 +29,7 @@ SELECT
 	CustomerID as "Customer ID",
 	AccountNumber as "Account No.",
 	COUNT(SalesOrderId) as "No.of order",
-	MAX(OrderDate) as "Olderst Order Date"
+	MIN(OrderDate) as "Oldest Order Date"
 FROM
 	Sales.SalesOrderHeader
 GROUP BY
@@ -111,7 +111,7 @@ FROM
 JOIN person.person p on
 	s.customerId = p.BusinessEntityid
 JOIN person.emailaddress e ON
-	p.BusinessEntityId = e.businessentityid
+	s.customerId = e.businessentityid
 ORDER BY
 	customerId;
  
