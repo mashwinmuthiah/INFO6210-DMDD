@@ -48,7 +48,7 @@ SELECT
 	COUNT(o.SalesOrderid) [Total Orders] ,
 	DENSE_RANK() OVER (PARTITION BY c.TerritoryID
 ORDER BY
-	COUNT(o.SalesOrderid))
+	COUNT(o.SalesOrderid)) as Ranking
 FROM
 	Sales.Customer c
 LEFT OUTER JOIN Sales.SalesOrderHeader o ON
@@ -124,6 +124,18 @@ WHERE
  before but have never purchased the product 708. Sort the
  results by the customer id in the ascending order. */
 
-
+SELECT
+	DISTINCT(h.CustomerId),
+	c.AccountNumber
+FROM
+	sales.SalesOrderHeader h
+LEFT JOIN sales.Customer c ON
+	h.CustomerId = c.CustomerId
+LEFT JOIN sales.SalesOrderDetail d ON
+	h.SalesOrderId = d.salesOrderId
+WHERE
+	d.ProductId NOT IN (708)
+ORDER BY 
+	h.CustomerId
 	
 	
