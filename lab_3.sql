@@ -135,7 +135,6 @@ LEFT JOIN sales.SalesOrderDetail d ON
 	h.SalesOrderId = d.salesOrderId
 WHERE
 	d.ProductId NOT IN (708)
-ORDER BY 
+ORDER BY
 	h.CustomerId
-	
 	
