@@ -23,7 +23,7 @@ SELECT
 		WHEN COUNT(o.SalesOrderid) BETWEEN 2 AND 5 THEN 'Regular'
 		WHEN COUNT(o.SalesOrderid) BETWEEN 6 AND 12 THEN 'Often'
 		ELSE 'Very Often'
-	END
+	END AS Class
 FROM
 	Sales.Customer c
 LEFT OUTER JOIN Sales.SalesOrderHeader o ON
