@@ -1,6 +1,7 @@
 USE adventureworks2008R2;
 
 -- Lab 2 Exercise 
+
 SELECT
 	COUNT(CreditCardID) as [cards]
 FROM
@@ -254,3 +255,71 @@ FROM
 	temp
 WHERE
 	Rank = 1;
+
+-- Exercise 5
+/* List the product id, product name, and order date of each
+ product sold in 2008.
+*/
+
+SELECT
+	 DISTINCT p.ProductID,
+	p.Name,
+	s.OrderDate
+FROM
+	Sales.SalesOrderHeader s
+JOIN Sales.SalesOrderDetail d ON
+	s.SalesOrderID = d.SalesOrderID
+JOIN Production.Product p ON
+	d.ProductID = p.ProductID
+WHERE
+	datepart(YEAR,
+	OrderDate) = 2008
+	
+-- Exercise 6
+/* What is the name and average rating for the product with
+ ProductID = 937? */
+SELECT
+	p.name,
+	AVG(rating) [Rating]
+from
+	Production.Product p
+JOIN Production.ProductReview r ON
+	p.ProductID = r.ProductID
+WHERE p.ProductID = 937
+GROUP BY
+	p.name;
+
+select pdt.name, avg(pr.rating) as rating
+from Production.Product pdt
+join Production.ProductReview pr
+on pdt.ProductID = pr.ProductID
+where pr.ProductID = 937
+group by pdt.Name;
+
+
+-- Exercise 7
+/* Use the SubTotal value in SalesOrderHeader to calculate
+ total value. What is the total value of products sold to
+ an address in 'Seattle'? */
+
+select ad.city, sum(SubTotal) as total_value
+from Sales.SalesOrderHeader soh
+join Person.Address ad on soh.ShipToAddressID = ad.AddressID
+where ad.city = 'Seattle'
+group by ad.city;
+
+-- Lab 2 Questions 
+
+-- 2-1
+
+/* Select product id, name and selling start date for all products
+ that started selling after 01/01/2007 and had a black color.
+ Use the CAST function to display the date only. Sort the returned
+ data by the selling start date.
+ Hint: a: You need to work with the Production.Product table.
+ b: The syntax for CAST is CAST(expression AS data_type),
+ where expression is the column name we want to format and
+ we can use DATE as data_type for this question to display
+ just the date. */
+USE adventureworks2008R2;
+SELECT ProductID,Name,SellStartDate from Production.Product
