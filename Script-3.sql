@@ -1,4 +1,7 @@
-use adventureworks2008R2 SELECT
+USE adventureworks2008R2;
+
+-- Lab 2 Exercise 
+SELECT
 	COUNT(CreditCardID) as [cards]
 FROM
 	Sales.SalesOrderHeader;
@@ -158,3 +161,36 @@ join Sales.CurrencyRate cr on
 	soh.CurrencyRateID = cr.CurrencyRateID
 join Sales.Currency crc on
 	cr.ToCurrencyCode = crc.CurrencyCode;
+	
+-- Lab 3 exercise
+
+-- Exercise 1
+/*
+ SELECT ProductID, Name, ListPrice FROM Production.Product.
+ Use the CASE function to display "Expensive" if ListPrice > 3000
+ "Medium" if ListPrice > 1000
+"Low" if ListPrice <= 1000.
+ ORDER the results DESC BY ListPrice.
+*/
+
+SELECT
+	ProductID,
+	Name,
+	ListPrice,
+	CASE
+		WHEN ListPrice > 3000 THEN 'Expensive'
+		WHEN ListPrice > 1000 THEN 'Medium'
+		ELSE 'Low'
+	END AS Pricecategory
+FROM
+	Production.Product
+order by
+	ListPrice DESC;
+
+ -- Exercise 2
+/*
+ SELECT SalesOrderID, CustomerID, TotalDue
+ FROM Sales.SalesOrderHeader
+ WHERE TotalDue > 10000
+ and RANK them with gaps in the desc order of TotalDue
+*/
