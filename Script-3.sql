@@ -1,8 +1,6 @@
 USE adventureworks2008R2;
-
 -- Lab 2 Exercise 
-
-SELECT
+ SELECT
 	COUNT(CreditCardID) as [cards]
 FROM
 	Sales.SalesOrderHeader;
@@ -162,18 +160,15 @@ join Sales.CurrencyRate cr on
 	soh.CurrencyRateID = cr.CurrencyRateID
 join Sales.Currency crc on
 	cr.ToCurrencyCode = crc.CurrencyCode;
-	
 -- Lab 3 exercise
-
 -- Exercise 1
-/*
+ /*
  SELECT ProductID, Name, ListPrice FROM Production.Product.
  Use the CASE function to display "Expensive" if ListPrice > 3000
  "Medium" if ListPrice > 1000
 "Low" if ListPrice <= 1000.
  ORDER the results DESC BY ListPrice.
 */
-
 SELECT
 	ProductID,
 	Name,
@@ -187,15 +182,13 @@ FROM
 	Production.Product
 order by
 	ListPrice DESC;
-
- -- Exercise 2
-/*
+-- Exercise 2
+ /*
  SELECT SalesOrderID, CustomerID, TotalDue
  FROM Sales.SalesOrderHeader
  WHERE TotalDue > 10000
  and RANK them with gaps in the desc order of TotalDue
 */
-
 SELECT
 	SalesOrderID,
 	CustomerID,
@@ -207,30 +200,27 @@ FROM
 	Sales.SalesOrderHeader
 WHERE
 	TotalDue > 10000
-
--- Exercise 3
-
-/*
+	-- Exercise 3
+ /*
  SELECT SalesOrderID, CustomerID, TotalDue
  FROM Sales.SalesOrderHeader
  WHERE TotalDue > 10000
  and RANK them with gaps in the desc order of TotalDue
  also PARTITION BY CustomerID
 */
-SELECT
-	SalesOrderId,
-	CustomerID,
-	TotalDue,
-	RANK() OVER (PARTITION BY CustomerID
-ORDER BY
-	TotalDue DESC) [Ranks]
-FROM
-	Sales.SalesOrderHeader
-WHERE
-	TotalDue >10000
-
--- Exercise 4
-/*
+	SELECT
+		SalesOrderId,
+		CustomerID,
+		TotalDue,
+		RANK() OVER (PARTITION BY CustomerID
+	ORDER BY
+		TotalDue DESC) [Ranks]
+	FROM
+		Sales.SalesOrderHeader
+	WHERE
+		TotalDue >10000
+		-- Exercise 4
+ /*
  SELECT SalesOrderID, CustomerID, TotalDue
  FROM Sales.SalesOrderHeader
  WHERE TotalDue > 10000
@@ -238,31 +228,29 @@ WHERE
  also PARTITION BY CustomerID
  Display only the highest total due amount for each customer.
 */
-
-WITH temp AS (
-	SELECT SalesOrderID,
-	CustomerID,
-	TotalDue,
-	RANK() OVER(PARTITION by CustomerID
-ORDER BY
-	TotalDue DESC) [Rank]
-FROM
-	Sales.SalesOrderHeader
-WHERE
-	TotalDue > 10000) SELECT
-	*
-FROM
-	temp
-WHERE
-	Rank = 1;
-
+		WITH temp AS (
+		SELECT
+			SalesOrderID,
+			CustomerID,
+			TotalDue,
+			RANK() OVER(PARTITION by CustomerID
+		ORDER BY
+			TotalDue DESC) [Rank]
+		FROM
+			Sales.SalesOrderHeader
+		WHERE
+			TotalDue > 10000) SELECT
+			*
+		FROM
+			temp
+		WHERE
+			Rank = 1;
 -- Exercise 5
-/* List the product id, product name, and order date of each
+ /* List the product id, product name, and order date of each
  product sold in 2008.
 */
-
 SELECT
-	 DISTINCT p.ProductID,
+	DISTINCT p.ProductID,
 	p.Name,
 	s.OrderDate
 FROM
@@ -274,45 +262,50 @@ JOIN Production.Product p ON
 WHERE
 	datepart(YEAR,
 	OrderDate) = 2008
-	
--- Exercise 6
-/* What is the name and average rating for the product with
+	-- Exercise 6
+ /* What is the name and average rating for the product with
  ProductID = 937? */
-SELECT
-	p.name,
-	AVG(rating) [Rating]
+	SELECT
+		p.name,
+		AVG(rating) [Rating]
+	from
+		Production.Product p
+	JOIN Production.ProductReview r ON
+		p.ProductID = r.ProductID
+	WHERE
+		p.ProductID = 937
+	GROUP BY
+		p.name;
+
+select
+	pdt.name,
+	avg(pr.rating) as rating
 from
-	Production.Product p
-JOIN Production.ProductReview r ON
-	p.ProductID = r.ProductID
-WHERE p.ProductID = 937
-GROUP BY
-	p.name;
-
-select pdt.name, avg(pr.rating) as rating
-from Production.Product pdt
-join Production.ProductReview pr
-on pdt.ProductID = pr.ProductID
-where pr.ProductID = 937
-group by pdt.Name;
-
-
+	Production.Product pdt
+join Production.ProductReview pr on
+	pdt.ProductID = pr.ProductID
+where
+	pr.ProductID = 937
+group by
+	pdt.Name;
 -- Exercise 7
-/* Use the SubTotal value in SalesOrderHeader to calculate
+ /* Use the SubTotal value in SalesOrderHeader to calculate
  total value. What is the total value of products sold to
  an address in 'Seattle'? */
-
-select ad.city, sum(SubTotal) as total_value
-from Sales.SalesOrderHeader soh
-join Person.Address ad on soh.ShipToAddressID = ad.AddressID
-where ad.city = 'Seattle'
-group by ad.city;
-
+select
+	ad.city,
+	sum(SubTotal) as total_value
+from
+	Sales.SalesOrderHeader soh
+join Person.Address ad on
+	soh.ShipToAddressID = ad.AddressID
+where
+	ad.city = 'Seattle'
+group by
+	ad.city;
 -- Lab 2 Questions 
-
 -- 2-1
-
-/* Select product id, name and selling start date for all products
+ /* Select product id, name and selling start date for all products
  that started selling after 01/01/2007 and had a black color.
  Use the CAST function to display the date only. Sort the returned
  data by the selling start date.
@@ -322,4 +315,188 @@ group by ad.city;
  we can use DATE as data_type for this question to display
  just the date. */
 USE adventureworks2008R2;
-SELECT ProductID,Name,SellStartDate from Production.Product
+
+SELECT
+	ProductID,
+	Name,
+	CAST(SellStartDate as date) as SellingStartDate
+from
+	Production.Product
+WHERE
+	color = 'black'
+	and sellstartdate > '01/01/2007'
+Order by
+	SellStartDate;
+
+--2-2
+/* Retrieve the customer ID, account number, oldest order date
+ and total number of orders for each customer.
+ Use column aliases to make the report more presentable.
+ Sort the returned data by the total number of orders in
+ the descending order.
+ Hint: You need to work with the Sales.SalesOrderHeader table. */
+
+SELECT
+	CustomerId,
+	AccountNumber,
+	CAST(MIN(OrderDate) as Date) as [Date] ,
+	COUNT(SalesOrderId) as [No.Of orders]
+	from Sales.SalesOrderHeader
+GROUP BY
+	CustomerId,
+	AccountNumber
+ORDER BY
+	[No.Of orders] DESC
+
+
+--2-3
+/* Write a query to select the product id, name, and list price
+ for the product(s) that have the highest list price.
+ Hint: You’ll need to use a simple subquery to get the highest
+ list price and use it in a WHERE clause. */
+
+SELECT
+	ProductId,
+	Name,
+	ListPrice
+from
+	Production.Product
+WHERE
+	ListPrice = (
+		SELECT MAX(listprice)
+	from
+		Production.Product);
+--2-4
+/* Write a query to retrieve the total quantity sold for each product.
+ Include only products that have a total quantity sold greater than
+ 3000. Sort the results by the total quantity sold in the descending
+ order. Include the product ID, product name, and total quantity
+ sold columns in the report.
+*/
+select
+	p.ProductID,
+	Name,
+	sum(OrderQty) [Total Quantity]
+from
+	Production.Product p
+JOIN sales.salesOrderDetail h ON
+	p.ProductID = h.ProductID
+GROUP BY p.ProductID,name
+HAVING
+	sum(OrderQty) > 3000
+ORDER by
+	[Total Quantity] DESC;
+
+--2-5
+/* Write a SQL query to generate a list of customer ID's and
+ account numbers that have never placed an order before.
+ Sort the list by CustomerID in the ascending order. */
+
+SELECT
+	CustomerID,
+	AccountNumber
+from
+	sales.Customer
+where
+	CustomerID not IN (
+		SELECT customerID
+	from
+		sales.salesOrderHeader)
+ORDER BY
+	CustomerID ;
+
+--2-6
+/* Write a query to create a report containing customer id,
+ first name, last name and email address for all customers.
+ Sort the returned data by CustomerID. */
+
+SELECT
+	CustomerID,
+	FirstName,
+	LastName,
+	EmailAddress
+FROM
+	sales.Customer c
+JOIN Person.Person p ON
+	c.PersonID = p.BusinessEntityID
+JOIN Person.EmailAddress e on
+	c.PersonID = e.BusinessEntityID
+ORDER BY
+	CustomerId;
+
+-- Lab 3 Exercise.
+-- Lab 3-1
+/* Modify the following query to add a column that identifies the
+ frequency of repeat customers and contains the following values
+ based on the number of orders during 2007:
+'No Orders' for count = 0
+'One Time' for count = 1
+'Regular' for count range of 2-5
+'Often' for count range of 6-12
+'Very Often' for count greater than 12
+ Give the new column an alias to make the report more readable. */
+
+SELECT c.CustomerID, c.TerritoryID,
+ COUNT(o.SalesOrderid) [Total Orders],
+CASE     WHEN COUNT(o.SalesOrderid) = 1 THEN 'One Time' 
+         WHEN COUNT(o.SalesOrderid) between 2 and 5 THEN 'Regular' 
+         WHEN COUNT(o.SalesOrderid) between 6 and 12 THEN 'Often'  
+         WHEN COUNT(o.SalesOrderid) > 12 THEN 'Very Often'  
+         ELSE 'No Orders'
+		 END AS FREQUENCY
+FROM Sales.Customer c
+LEFT OUTER JOIN Sales.SalesOrderHeader o
+ ON c.CustomerID = o.CustomerID
+WHERE DATEPART(year, OrderDate) = 2007
+GROUP BY c.TerritoryID, c.CustomerID;
+
+-- Lab 3-2
+/* Modify the following query to add a rank without gaps in the
+ ranking based on total orders in the descending order. Also
+ partition by territory.*/
+
+SELECT c.CustomerID, c.TerritoryID,
+ COUNT(o.SalesOrderid) [Total Orders],DENSE_RANK() OVER(PARTITION BY c.TerritoryID ORDER BY COUNT(o.SalesOrderid) DESC ) as Rank
+FROM Sales.Customer c
+LEFT OUTER JOIN Sales.SalesOrderHeader o
+ ON c.CustomerID = o.CustomerID
+WHERE DATEPART(year, OrderDate) = 2007
+GROUP BY c.TerritoryID, c.CustomerID;
+
+-- Lab 3-3
+/* Write a query that returns the highest bonus amount
+ ever received by male sales people in Canada. */
+
+SELECT
+	TOP 1 with TIES Bonus
+from
+	sales.salesperson s
+join HumanResources.Employee e ON
+	s.BusinessEntityID = e.BusinessEntityID
+join sales.SalesTerritory t on
+	s.TerritoryID = t.TerritoryID
+where
+	e.gender = 'M'
+	and t.name = 'canada'
+ORDER BY
+	bonus DESC
+
+	
+-- Lab 3-4
+/* Write a query to list the most popular product color for each month
+ of 2007, considering all products sold in each month. The most
+ popular product color had the highest total quantity sold for
+ all products in that color.
+ Return the most popular product color and the total quantity of
+ the sold products in that color for each month in the result set.
+ Sort the returned data by month.
+
+ Exclude the products that don't have a specified color. */
+
+
+	
+-- Lab 3-5
+/* Write a query to retrieve the distinct customer id's and
+ account numbers for the customers who have placed an order
+ before but have never purchased the product 708. Sort the
+ results by the customer id in the ascending order. */
