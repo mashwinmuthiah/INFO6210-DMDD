@@ -492,11 +492,44 @@ ORDER BY
  Sort the returned data by month.
 
  Exclude the products that don't have a specified color. */
+with temp as 
+(SELECT
+	color,
+	SUM(OrderQty) [totalqty],month(OrderDate) [Months],
+	RANK() OVER(PARTITION BY month(OrderDate)
+ORDER BY
+	SUM(OrderQty) DESC) as Rankings
+from
+	Sales.SalesOrderHeader h
+JOIN sales.SalesOrderDetail d on
+	h.SalesOrderID = d.SalesOrderID
+JOIN production.Product p on
+	d.ProductID = p.ProductId
+WHERE Color is not NULL and datepart(YEAR,OrderDate) = 2007
+GROUP BY
+	color,month(OrderDate))
+SELECT * from temp where Rankings = 1;
 
-
-	
 -- Lab 3-5
 /* Write a query to retrieve the distinct customer id's and
  account numbers for the customers who have placed an order
  before but have never purchased the product 708. Sort the
  results by the customer id in the ascending order. */
+
+SELECT
+	CustomerId,
+	AccountNumber
+FROM
+	sales.SalesOrderHeader
+EXCEPT SELECT
+	h.CustomerId,
+	h.AccountNumber
+from
+	sales.SalesOrderHeader h
+JOIN sales.SalesOrderDetail d on
+	d.SalesOrderID = h.SalesOrderID
+where
+	d.productId = 708
+order by
+	customerId
+
