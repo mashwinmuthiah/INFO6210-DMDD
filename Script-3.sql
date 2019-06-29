@@ -194,3 +194,63 @@ order by
  WHERE TotalDue > 10000
  and RANK them with gaps in the desc order of TotalDue
 */
+
+SELECT
+	SalesOrderID,
+	CustomerID,
+	TotalDue,
+	RANK() OVER (
+ORDER BY
+	TotalDue DESC ) as Ranks
+FROM
+	Sales.SalesOrderHeader
+WHERE
+	TotalDue > 10000
+
+-- Exercise 3
+
+/*
+ SELECT SalesOrderID, CustomerID, TotalDue
+ FROM Sales.SalesOrderHeader
+ WHERE TotalDue > 10000
+ and RANK them with gaps in the desc order of TotalDue
+ also PARTITION BY CustomerID
+*/
+SELECT
+	SalesOrderId,
+	CustomerID,
+	TotalDue,
+	RANK() OVER (PARTITION BY CustomerID
+ORDER BY
+	TotalDue DESC) [Ranks]
+FROM
+	Sales.SalesOrderHeader
+WHERE
+	TotalDue >10000
+
+-- Exercise 4
+/*
+ SELECT SalesOrderID, CustomerID, TotalDue
+ FROM Sales.SalesOrderHeader
+ WHERE TotalDue > 10000
+ and RANK them with gaps in the desc order of TotalDue
+ also PARTITION BY CustomerID
+ Display only the highest total due amount for each customer.
+*/
+
+WITH temp AS (
+	SELECT SalesOrderID,
+	CustomerID,
+	TotalDue,
+	RANK() OVER(PARTITION by CustomerID
+ORDER BY
+	TotalDue DESC) [Rank]
+FROM
+	Sales.SalesOrderHeader
+WHERE
+	TotalDue > 10000) SELECT
+	*
+FROM
+	temp
+WHERE
+	Rank = 1;
