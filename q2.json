@@ -1,0 +1,35 @@
+{   
+    "_id":{
+    "$oid":"1"},
+    "SalesOrderId":44518,
+    "OrderDate":"2005-11-01",
+    "OrderValue":142312
+}
+
+{   
+    "_id":{
+    "$oid":"2"},
+    "SalesOrderId":43875,
+    "OrderDate":"2005-08-01",
+    "OrderValue":137343
+}
+
+{   
+    "_id":{
+    "$oid":"3"},
+    "SalesOrderId":47455,
+    "OrderDate":"2006-09-01",
+    "OrderValue":126992
+}
+
+{   
+    "_id":{
+        "$oid":"1A"
+    },
+    "TerritoryID":5,
+    "Name":"Southeast",
+    "sales":[ {"_id":{"$oid":"1"}},
+        {"_id":{"$oid":"2"}},
+        {"_id":{"$oid":"3"}}]
+}
+
